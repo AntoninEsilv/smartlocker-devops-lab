@@ -14,6 +14,7 @@ It demonstrates a realistic workflow: **PLAN (Jira) → CODE (Git/VS Code) → B
 
 ## Quickstart
 
+
 ```bash
 npm ci
 npm run dev          # http://localhost:3000
