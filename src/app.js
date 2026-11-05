@@ -11,6 +11,7 @@ import versionRouter from './routes/auto/version.route.js'
 import infoRouter from './routes/auto/info.route.js'
 import boomRouter from './routes/auto/boom.route.js'
 import usersRouter from './routes/auto/users.route.js'
+import notificationsRouter from './routes/auto/notifications.route.js'
 
 const app = express()
 
@@ -26,6 +27,7 @@ app.use('/', versionRouter)
 app.use('/', infoRouter)
 app.use('/', boomRouter)
 app.use('/api/users', usersRouter)
+app.use('/api/notifications', notificationsRouter)
 
 // Global error middleware last
 app.use(errorHandler)
