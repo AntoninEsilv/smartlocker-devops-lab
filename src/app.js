@@ -12,6 +12,7 @@ import infoRouter from './routes/auto/info.route.js'
 import boomRouter from './routes/auto/boom.route.js'
 import usersRouter from './routes/auto/users.route.js'
 import notificationsRouter from './routes/auto/notifications.route.js'
+import paymentsRouter from './routes/auto/payments.route.js'
 
 const app = express()
 
@@ -28,6 +29,7 @@ app.use('/', infoRouter)
 app.use('/', boomRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/notifications', notificationsRouter)
+app.use('/api/payments', paymentsRouter)
 
 // Global error middleware last
 app.use(errorHandler)
