@@ -130,6 +130,12 @@ const normalise = (r) => ({
 
 const findIndexById = (id) => reservations.findIndex((r) => r.id === Number(id))
 
+// Used by /api/lockers (SMAR-39): a locker with an active booking cannot be deleted
+export function hasActiveReservation (lockerId) {
+  releaseExpiredHolds()
+  return reservations.some((r) => r.locker_id === Number(lockerId) && ACTIVE_STATUSES.includes(r.status))
+}
+
 // Holds are released before any request reads or changes the data
 router.use((_req, _res, next) => {
   releaseExpiredHolds()
