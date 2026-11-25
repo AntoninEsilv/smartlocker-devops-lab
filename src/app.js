@@ -15,6 +15,7 @@ import notificationsRouter from './routes/auto/notifications.route.js'
 import reservationsRouter from './routes/auto/reservations.route.js'
 import managementRouter from './routes/auto/management.route.js'
 import studentsRouter from './routes/auto/students.route.js'
+import paymentsRouter from './routes/auto/payments.route.js'
 
 const app = express()
 
@@ -34,6 +35,7 @@ app.use('/api/notifications', notificationsRouter)
 app.use('/api/reservations', reservationsRouter)
 app.use('/api/management', managementRouter)
 app.use('/api/students', studentsRouter)
+app.use('/api/payments', paymentsRouter)
 
 // Global error middleware last
 app.use(errorHandler)
