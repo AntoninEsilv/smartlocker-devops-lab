@@ -16,6 +16,8 @@ import reservationsRouter from './routes/auto/reservations.route.js'
 import managementRouter from './routes/auto/management.route.js'
 import studentsRouter from './routes/auto/students.route.js'
 import paymentsRouter from './routes/auto/payments.route.js'
+import hubsRouter from './routes/auto/hubs.route.js'
+import lockersRouter from './routes/auto/lockers.route.js'
 
 const app = express()
 
@@ -36,6 +38,8 @@ app.use('/api/reservations', reservationsRouter)
 app.use('/api/management', managementRouter)
 app.use('/api/students', studentsRouter)
 app.use('/api/payments', paymentsRouter)
+app.use('/api/hubs', hubsRouter)
+app.use('/api/lockers', lockersRouter)
 
 // Global error middleware last
 app.use(errorHandler)
