@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "8f2a9c41-5b19-4d83-9b14-7c62e84a9102",
-    "name": "SmartLocker REST API - Lab 6 (Users & Notifications CRUD)",
-    "description": "Full CRUD Postman Collection for SmartLocker Entities assigned to Antonin Charron:\n- Entity 1: Users (/api/users) - Jira SMAR-42\n- Entity 2: Notifications (/api/notifications) - Jira SMAR-37",
+    "name": "SmartLocker REST API - Lab 6 (CRUD)",
+    "description": "Full CRUD Postman Collection for SmartLocker Entities assigned to Antonin Charron:\n- Entity 1: Users (/api/users) - Jira SMAR-42\n- Entity 2: Notifications (/api/notifications) - Jira SMAR-37\n- Entity 3: Reservations (/api/reservations) - Jira SMAR-24 (Marc Chen)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -359,6 +359,234 @@
           }
         }
       ]
+    },
+    {
+      "name": "3. Reservations API (/api/reservations) - SMAR-24",
+      "item": [
+        {
+          "name": "GET All Reservations (/api/reservations)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('Status code is 200 OK', function () {", "    pm.response.to.have.status(200);", "});", "pm.test('Response is an array of reservations', function () {", "    const jsonData = pm.response.json();", "    pm.expect(jsonData).to.be.an('array');", "    pm.expect(jsonData.length).to.be.above(0);", "    pm.expect(jsonData[0]).to.have.property('locker_id');", "});"],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/reservations",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "reservations"]
+            }
+          }
+        },
+        {
+          "name": "GET Reservation by ID (/api/reservations/101)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('Status code is 200 OK', function () {", "    pm.response.to.have.status(200);", "});", "pm.test('Returns reservation 101 for locker 1', function () {", "    const jsonData = pm.response.json();", "    pm.expect(jsonData.id).to.eql(101);", "    pm.expect(jsonData.locker_id).to.eql(1);", "});"],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/reservations/101",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "reservations", "101"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Reservation (/api/reservations)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('Status code is 201 Created', function () {", "    pm.response.to.have.status(201);", "});", "pm.test('Booking is created with status PENDING_PAYMENT', function () {", "    const jsonData = pm.response.json();", "    pm.expect(jsonData).to.have.property('id');", "    pm.expect(jsonData.locker_id).to.eql(4);", "    pm.expect(jsonData.status).to.eql('PENDING_PAYMENT');", "});", "pm.test('Locker is held for 15 minutes (countdown)', function () {", "    const jsonData = pm.response.json();", "    pm.expect(jsonData).to.have.property('hold_expires_at');", "    pm.expect(jsonData.hold_remaining_seconds).to.be.within(1, 900);", "    pm.collectionVariables.set('reservationId', jsonData.id);", "});"],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"locker_id\": 4,\n  \"user_id\": 2,\n  \"start_time\": \"2025-03-05T08:00:00Z\",\n  \"end_time\": \"2025-03-05T12:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/reservations",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "reservations"]
+            }
+          }
+        },
+        {
+          "name": "POST Reservation - Locker already reserved (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('Status code is 409 Conflict', function () {", "    pm.response.to.have.status(409);", "});", "pm.test('Error explains the conflict', function () {", "    pm.expect(pm.response.json().error).to.eql('Locker already reserved for this period');", "});"],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"locker_id\": 1,\n  \"user_id\": 2,\n  \"start_time\": \"2025-03-01T10:00:00Z\",\n  \"end_time\": \"2025-03-01T12:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/reservations",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "reservations"]
+            }
+          }
+        },
+        {
+          "name": "POST Reservation - Missing fields (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('Status code is 400 Bad Request', function () {", "    pm.response.to.have.status(400);", "});", "pm.test('Error message is returned', function () {", "    pm.expect(pm.response.json()).to.have.property('error');", "});"],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"locker_id\": 4\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/reservations",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "reservations"]
+            }
+          }
+        },
+        {
+          "name": "PUT Confirm Reservation after payment (/api/reservations/{{reservationId}})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('Status code is 200 OK', function () {", "    pm.response.to.have.status(200);", "});", "pm.test('Paid booking is CONFIRMED and the countdown stops', function () {", "    const jsonData = pm.response.json();", "    pm.expect(jsonData.status).to.eql('CONFIRMED');", "    pm.expect(jsonData.hold_remaining_seconds).to.eql(null);", "});"],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"CONFIRMED\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/reservations/{{reservationId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "reservations", "{{reservationId}}"]
+            }
+          }
+        },
+        {
+          "name": "DELETE Reservation (/api/reservations/{{reservationId}})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('Status code is 204 No Content', function () {", "    pm.response.to.have.status(204);", "});"],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/reservations/{{reservationId}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "reservations", "{{reservationId}}"]
+            }
+          }
+        },
+        {
+          "name": "GET Reservation not found (/api/reservations/999)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test('Status code is 404 Not Found', function () {", "    pm.response.to.have.status(404);", "});", "pm.test('Error message is returned', function () {", "    pm.expect(pm.response.json().error).to.eql('Reservation not found');", "});"],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/reservations/999",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["api", "reservations", "999"]
+            }
+          }
+        }
+      ]
     }
+  ],
+  "variable": [
+    { "key": "reservationId", "value": "" }
   ]
 }
