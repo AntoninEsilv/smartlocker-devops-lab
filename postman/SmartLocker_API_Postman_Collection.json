@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "8f2a9c41-5b19-4d83-9b14-7c62e84a9102",
     "name": "SmartLocker REST API - Lab 6 (CRUD)",
-    "description": "Full CRUD Postman Collection for SmartLocker Entities assigned to Antonin Charron:\n- Entity 1: Users (/api/users) - Jira SMAR-42\n- Entity 2: Notifications (/api/notifications) - Jira SMAR-37\n- Entity 3: Reservations (/api/reservations) - Jira SMAR-24 (Marc Chen)\n- Entity 4: Management (/api/management) - Jira SMAR-19 (Marc Chen)\n- Entity 8: Lockers (/api/lockers) - Jira SMAR-39 (Dorian)\n- Entity 9: Hubs (/api/hubs) - Jira SMAR-39 (Dorian)",
+    "description": "Full CRUD Postman Collection for SmartLocker Entities assigned to Antonin Charron:\n- Entity 1: Users (/api/users) - Jira SMAR-42\n- Entity 2: Notifications (/api/notifications) - Jira SMAR-37\n- Entity 3: Reservations (/api/reservations) - Jira SMAR-24 (Marc Chen)\n- Entity 4: Management (/api/management) - Jira SMAR-19 (Marc Chen)\n- Entity 8: Lockers (/api/lockers) - Jira SMAR-39 (Dorian)\n- Entity 9: Hubs (/api/hubs) - Jira SMAR-39 (Dorian)\n- Entity 7: Teachers (/api/teachers) - Jira SMAR-66 (Dorian)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -894,6 +894,385 @@
               "host": ["localhost"],
               "port": "3000",
               "path": ["api", "management", "999"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Teachers API (/api/teachers) - SMAR-66",
+      "item": [
+        {
+          "name": "GET All Teachers (/api/teachers)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response is an array of teachers', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    pm.expect(jsonData.length).to.be.above(0);",
+                  "    pm.expect(jsonData[0]).to.have.property('specialty');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/teachers",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "teachers"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Teacher by ID (/api/teachers/1)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Teacher 1 is Marc Dubois (user 2)', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.eql(1);",
+                  "    pm.expect(jsonData.user_id).to.eql(2);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/teachers/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "teachers",
+                "1"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST Create Teacher (/api/teachers)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Teacher is created with an id', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.user_id).to.eql(4);",
+                  "    pm.expect(jsonData.specialty).to.eql('Computer Science');",
+                  "    pm.collectionVariables.set('teacherId', jsonData.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/teachers",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "teachers"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 4,\n  \"specialty\": \"Computer Science\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST Teacher - User already teacher (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 409 Conflict', function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test('Error message is correct', function () {",
+                  "    pm.expect(pm.response.json().error).to.eql('This user already has a teacher profile');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/teachers",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "teachers"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 2,\n  \"specialty\": \"Physics\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST Teacher - Missing fields (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test('Error message is correct', function () {",
+                  "    pm.expect(pm.response.json().error).to.eql('Missing required fields: user_id and specialty are required');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/teachers",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "teachers"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 6\n}"
+            }
+          }
+        },
+        {
+          "name": "PUT Update Teacher (/api/teachers/{{teacherId}})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Only the specialty changed', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.eql(Number(pm.collectionVariables.get('teacherId')));",
+                  "    pm.expect(jsonData.user_id).to.eql(4);",
+                  "    pm.expect(jsonData.specialty).to.eql('Software Engineering');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/teachers/{{teacherId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "teachers",
+                "{{teacherId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"specialty\": \"Software Engineering\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PUT Teacher not found (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404 Not Found', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test('Error message is correct', function () {",
+                  "    pm.expect(pm.response.json().error).to.eql('Teacher not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/api/teachers/999",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "teachers",
+                "999"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"specialty\": \"Mathematics\"\n}"
+            }
+          }
+        },
+        {
+          "name": "DELETE Teacher (/api/teachers/{{teacherId}})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 204 No Content', function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/teachers/{{teacherId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "teachers",
+                "{{teacherId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Teacher not found (/api/teachers/999)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404 Not Found', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test('Error message is correct', function () {",
+                  "    pm.expect(pm.response.json().error).to.eql('Teacher not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/teachers/999",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "teachers",
+                "999"
+              ]
             }
           }
         }
@@ -1917,6 +2296,7 @@
     { "key": "reservationId", "value": "" },
     { "key": "managementId", "value": "" },
     { "key": "lockerId", "value": "" },
-    { "key": "hubId", "value": "" }
+    { "key": "hubId", "value": "" },
+    { "key": "teacherId", "value": "" }
   ]
 }
